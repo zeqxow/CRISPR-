@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRISPR and Microbes - Editing the Future</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --accent-color: #38bdf8;
+            --btn-bg: #3b82f6;
+            --btn-hover: #2563eb;
+            --btn-active: #10b981;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            max-width: 750px;
+            width: 100%;
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background-color: var(--btn-bg);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background-color: var(--btn-hover);
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            background-color: #475569;
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .speaking {
+            background-color: var(--btn-active) !important;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .image-container {
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #020617;
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        .counter {
+            margin: 15px 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-align: center;
+        }
+
+        .nav-controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .nav-controls button {
+            flex: 1;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="controls">
+        <button id="langBtn" onclick="toggleLanguage()">🌐 Switch to Hindi</button>
+        <button id="speakBtn" onclick="toggleSpeech()">🎤 Read Text</button>
+    </div>
+
+    <div class="image-container">
+        <img id="viewerImage" src="" alt="CRISPR and Microbes Infographic Page">
+    </div>
+
+    <div class="counter" id="pageCounter">Page 1 of 5</div>
+
+    <div class="nav-controls">
+        <button id="prevBtn" onclick="changeImage(-1)">⬅️ Previous</button>
+        <button id="nextBtn" onclick="changeImage(1)">Next ➡️</button>
+    </div>
+</div>
+
+<script>
+    const galleryData = {
+        en: [
+            {
+                url: "CRISPR Eng1.jpeg",
+                text: "CRISPR and Microbes: Editing the Future. Nature's Tiny Scissors. What is CRISPR? Clustered Regularly Interspaced Short Palindromic Repeats. Natural immune system of bacteria. Discovered in 1987. Nobel 2020 awarded to Doudna and Charpentier."
+            },
+            {
+                url: "CRISPR Eng2.jpeg",
+                text: "How CRISPR Works? 3 Step Process: Guide RNA, Cas9 Protein, Streptococcus pyogenes cuts DNA, NHEJ, HDR Repair, Delete, Insert, Replace. Step 1: Guide RNA. A custom strand of RNA is designed to match the target DNA sequence. Acts as a guide to locate the specific site in the genome. Step 2: Cas9 Protein. Cas9 protein from Streptococcus pyogenes binds to the Guide RNA. The complex travels to the DNA and locks onto the matching sequence. Step 3: Streptococcus pyogenes cuts DNA. NHEJ Delete: Non-Homologous End Joining. Cell patches the break, often deleting a small section of DNA. Result: Gene is disabled or removed. HDR Insert or Replace: Homology-Directed Repair. Uses a DNA template to insert or replace genetic material precisely. Result: New DNA is added or replaced. DNA Scissors: Cas9 acts as molecular scissors to cut DNA at the target location, enabling precise gene editing. CRISPR-Cas9 is a natural bacterial defence system adapted for precise genome editing."
+            },
+            {
+                url: "CRISPR Eng3.jpeg",
+                text: "Role of Microbes — The Source of CRISPR. Microbes are the natural source of CRISPR-Cas systems — an adaptive immune defense evolved by bacteria and archaea to fight viral invaders. This bacterial defense mechanism has been adapted into the revolutionary CRISPR gene-editing technology. Key CRISPR Proteins Derived from Microbes: Cas9 sourced from Streptococcus pyogenes, most widely used CRISPR system, cuts DNA with guide RNA to target specific sequences. Cas12a (Cpf1) sourced from various bacteria like Francisella and Acidaminococcus, cuts DNA with staggered cut, requires only single RNA guide, simpler and more precise editing. Cas13 sourced from RNA-targeting bacteria, targets and degrades RNA instead of DNA, used for RNA detection and diagnostics. Cas14 — the tiny, sourced from microbes from natural environments, smallest Cas protein, compact size enables delivery in cells, targets single-stranded DNA. Bacteria vs Phage — Arms Race: Bacteria Defense CRISPR-Cas system stores phage DNA fragments as spacers vs Phage Counterattack phage mutates PAM sequence to escape recognition, example: mutation in viral genome evades Cas9 targeting. Restriction enzymes cut invading phage DNA vs Phage encodes anti-restriction proteins, example: phage produces proteins that inhibit bacterial defenses. Biofilm formation to block phage infection vs Phage evolves to degrade biofilm matrix, example: continuous co-evolution over time. Why it matters: This evolutionary arms race between bacteria and phages has provided scientists with natural tools for gene editing, disease diagnostics, and biotechnology. CRISPR technology is inspired by microbial immunity — nature's own genetic defense system."
+            },
+            {
+                url: "CRISPR Eng4.jpeg",
+                text: "Applications of CRISPR — Why it matters. Medicine: sickle cell, Casgevy approved December 2023, CAR-T. Agriculture: disease resistant crops, non-browning mushroom. Industrial Microbiology: insulin, biofuels, plastic-eating enzymes. Diagnostics: SHERLOCK, DETECTR, COVID, Dengue, rapid testing. CRISPR enables precise, targeted gene editing to solve real-world challenges."
+            },
+            {
+                url: "CRISPR Eng5.jpeg",
+                text: "Future Ethics & Conclusion. Future possibilities: eradicating genetic diseases, ending hunger, biofuels, de-extinction. Ethical questions: human embryo germline debate, off-target effects. From a Bacterial Shield to Humanity's Greatest Tool — The Future is Edited. Thank you."
+            }
+        ],
+        hi: [
+            {
+                url: "CRISPR Hin1.jpeg",
+                text: "CRISPR और माइक्रोब्स भविष्य को आकार दे रहे हैं। प्रकृति की छोटी कैंची। CRISPR क्या है? बैक्टीरिया की प्राकृतिक प्रतिरक्षा प्रणाली में लघु, नियमित अंतरित अनुक्रम। बैक्टीरिया के प्राकृतिक प्रतिरक्षा तंत्र का हिस्सा, जिसकी खोज 1987 में हुई थी। नोबेल 2020 डौडना चापेंटियर।"
+            },
+            {
+                url: "CRISPR Hin2.jpeg",
+                text: "CRISPR कैसे काम करता है? यह कैसे कार्य करता है। 3 चरणों की प्रक्रिया: गाइड RNA, Cas9 प्रोटीन, स्ट्रैप्टोकोकस पाइोजेन्स कट्स DNA, NHEJ, HDR मरम्मत, डिलीट करना, डालना, बदलना। चरण 1 गाइड RNA: RNA की एक अनुकूलित स्ट्रैंड को इस तरह डिजाइन किया जाता है कि वह लक्ष्य DNA अनुक्रम से मेल खाए। यह जीनोम में विशिष्ट स्थान को खोजने में मदद करता है। Cas9 प्रोटीन: Cas9 प्रोटीन, स्ट्रैप्टोकोकस पाइोजेन्स से प्राप्त होता है, जो गाइड RNA से जुड़ता है। यह कॉम्प्लेक्स DNA के अनुक्रम पर जाता है और उससे लॉक हो जाता है। चरण 3: स्ट्रैप्टोकोकस पाइोजेन्स DNA को काटता है। NHEJ डिलीट: गैर-समतुल्य अंत-जोड़ों। कोशिका अक्मर DNA के छोटे हिस्से को हटा देती है। फिर से जुड़ने वाले एंजाइम कटे हुए सिरों का निपटान करते हैं। बायोफिल्म निर्माण संक्रमण को रोकता है। HDR डालना / बदलना: समरूप-निर्देशित मरम्मत। DNA टेम्पलेट का उपयोग करके सटीक रूप से आनुवंशिक सामग्री को बदला या प्रतिस्थापित करता है। परिणाम: नया DNA जोड़ या बदल गया। यह क्यों महत्वपूर्ण है: यह विकासवादी हथियार बैक्टीरिया और फेज़ के बीच की दौड़ में प्राकृतिक रूप से वैज्ञानिकों को जीत संपान, रोग निदान और जैव प्रौद्योगिकी के लिए उपयोगी अवसर प्रदान करता है। CRISPR तकनीक, सूक्ष्मजीवों की प्रतिरक्षा प्रणाली से प्रेरित है — प्रकृति की अपनी आनुवंशिक रक्षा प्रणाली।"
+            },
+            {
+                url: "CRISPR Hin3.jpeg",
+                text: "सूक्ष्मजीवों की भूमिका — CRISPR का स्रोत। सूक्ष्मजीव CRISPR-Cas प्रणालियों का प्राकृतिक स्रोत हैं — जो बैक्टीरिया और आर्किया द्वारा विकसित एक अनुकूलनशील प्रतिरक्षा तंत्र है, जो वायरल आक्रमणकारियों से लड़ने के लिए विकसित हुआ है। इस बैक्टीरियल रक्षा तंत्र को क्रांतिकारी CRISPR जीन-संपादन प्रौद्योगिकी में अनुकूलित किया गया है। सूक्ष्मजीवों से प्राप्त प्रमुख CRISPR प्रोटीन: Cas9 स्रोत Streptococcus pyogenes, सबसे व्यापक रूप से उपयोग किया जाने वाला CRISPR प्रणाली। यह मार्गदर्शक RNA के साथ विशिष्ट अनुक्रमों को लक्षित करता है। Cas12a (Cpf1) स्रोत विभिन्न बैक्टीरिया जैसे Francisella, Acidaminococcus, कटी हुई DNA के साथ स्टैगर कट बनाता है। केवल एकल RNA मार्गदर्शक की आवश्यकता होती है। अधिक सटीक संपादन करता है। Cas13 स्रोत RNA-लक्षित बैक्टीरिया, DNA के बजाय RNA को लक्षित और विघटित करता है। RNA की पहचान और निदान के लिए उपयोगी। Cas14 सूक्ष्म स्रोत प्राकृतिक वातावरण से प्राप्त सूक्ष्मजीव, सबसे छोटा Cas प्रोटीन। कोशिकाओं में डिलीवरी के लिए कॉम्पैक्ट आकार सक्षम करता है। एकल-स्ट्रैंडेड DNA को लक्षित करता है। बैक्टीरिया बनाम फेज़ — हथियारों की दौड़: बैक्टीरिया रक्षा CRISPR-Cas तंत्र फेज़ DNA खंडों को स्पेसर के रूप में संग्रहित करता है बनाम फेज़ आक्रमण फेज़ PAM अनुक्रम में म्यूटेशन करता है ताकि पहचान से बच सके, उदाहरण: वायरल जीनोम में म्यूटेशन Cas9 को लक्षित करने से बचाता है। प्रतिबंध एंजाइम फेज़ DNA को काटकर आक्रमण रोकते हैं बनाम फेज़ एंटी-प्रतिबंध प्रोटीन एन्कोड करता है, उदाहरण: फेज़ बैक्टीरियल रक्षा तंत्र को रोकने वाले प्रोटीन बनाता है। बायोफिल्म निर्माण फेज़ संक्रमण को रोकता है बनाम फेज़ बायोफिल्म मैट्रिक्स को तोड़ता है, उदाहरण: लगातार सह-विकास समय के साथ। यह क्यों महत्वपूर्ण है: यह विकासवादी हथियारों की दौड़, बैक्टीरिया और फेज़ के बीच, वैज्ञानिकों को प्राकृतिक उपकरणों के माध्यम से जीन संपादन, रोग निदान और जैव प्रौद्योगिकी के लिए मूल्यवान समाधान प्रदान करती है। CRISPR तकनीक सूक्ष्मजीव प्रतिरक्षा से प्रेरित है — प्रकृति की अपनी आनुवंशिक रक्षा प्रणाली।"
+            },
+            {
+                url: "CRISPR Hin4.jpeg",
+                text: "CRISPR के अनुप्रयोग। चिकित्सा: सिक्ल सेल, Casgevy (दिसंबर 2023), CAR-T। कृषि: रोग-प्रतिरोधी फसलें, भूरेपन से मुक्त मशरूम। औद्योगिक सूक्ष्मजीवविज्ञान: इंसुलिन, जैव ईंधन, प्लास्टिक-खाने वाले एंजाइम। निदान: SHERLOCK, DETECTR, COVID, डेंगू, त्वरित। CRISPR वास्तविक दुनिया की चुनौतियों को हल करने के लिए सटीक, लक्षित जीन-संपादन सक्षम करता है।"
+            },
+            {
+                url: "CRISPR Hin5.jpeg",
+                text: "भविष्य की नैतिकता और निष्कर्ष। भविष्य की संभावनाएँ: आनुवंशिक रोगों का उन्मूलन, भूख का अंत, जैव ईंधन, विलुप्तप्राय प्रजातियों का पुनर्जीवन। नैतिक प्रश्न: मानव भ्रूण पर जर्मलाइन बहस, ऑफ-टारगेट प्रभाव। एक बैक्टीरियल ढाल से मानवता के लिए सबसे बड़ा उपकरण तक — भविष्य को संपादित किया जा रहा है। धन्यवाद।"
+            }
+        ]
+    };
+
+    let currentLang = 'en';
+    let currentIndex = 0;
+    const synth = window.speechSynthesis;
+
+    function updatePage() {
+        stopSpeech();
+        const currentData = galleryData[currentLang][currentIndex];
+        
+        document.getElementById('viewerImage').src = currentData.url;
+        document.getElementById('pageCounter').innerText = `Page ${currentIndex + 1} of ${galleryData[currentLang].length}`;
+        
+        document.getElementById('prevBtn').disabled = currentIndex === 0;
+        document.getElementById('nextBtn').disabled = currentIndex === galleryData[currentLang].length - 1;
+        document.getElementById('langBtn').innerText = currentLang === 'en' ? '🌐 Switch to Hindi' : '🌐 Switch to English';
+    }
+
+    function changeImage(direction) {
+        currentIndex += direction;
+        updatePage();
+    }
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'en' ? 'hi' : 'en';
+        updatePage();
+    }
+
+    function toggleSpeech() {
+        if (synth.speaking) {
+            stopSpeech();
+            return;
+        }
+
+        const textToRead = galleryData[currentLang][currentIndex].text;
+        const utterance = new SpeechSynthesisUtterance(textToRead);
+        
+        utterance.lang = currentLang === 'en' ? 'en-US' : 'hi-IN';
+        utterance.rate = 0.95; 
+
+        const speakBtn = document.getElementById('speakBtn');
+        speakBtn.classList.add('speaking');
+        speakBtn.innerText = '⏹️ Stop Reading';
+
+        utterance.onend = () => {
+            resetSpeechUI();
+        };
+
+        utterance.onerror = () => {
+            resetSpeechUI();
+        };
+
+        synth.speak(utterance);
+    }
+
+    function stopSpeech() {
+        if (synth.speaking) {
+            synth.cancel();
+        }
+        resetSpeechUI();
+    }
+
+    function resetSpeechUI() {
+        const speakBtn = document.getElementById('speakBtn');
+        speakBtn.classList.remove('speaking');
+        speakBtn.innerText = '🎤 Read Text';
+    }
+
+    updatePage();
+</script>
+
+</body>
+</html>
